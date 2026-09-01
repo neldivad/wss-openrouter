@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900.0" height="486.0" viewBox="0 0 900.0 486.0" role="img" aria-label="What people actually ask models to do">
+<title>What people actually ask models to do</title>
+<desc>Ranked bar chart of OpenRouter token share by task classification.</desc>
+<rect width="900.0" height="486.0" fill="#fcfcfb"/>
+<text x="24.0" y="30.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="16" fill="#0b0b0b" text-anchor="start" font-weight="600" style="">What people actually ask models to do</text>
+<text x="24.0" y="50.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="12" fill="#52514e" text-anchor="start" font-weight="normal" style="">share of tokens on OpenRouter by task · trailing 7 days to 2026-08-31</text>
+<text x="24.0" y="70.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="12" fill="#52514e" text-anchor="start" font-weight="600" style="">Code 37% · Agent 35% · General 22% · Data 6%</text>
+<line x1="268.0" y1="80.0" x2="268.0" y2="454.0" stroke="#c3c2b7" stroke-width="1"/>
+<line x1="268.0" y1="80.0" x2="268.0" y2="454.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="268.0" y="468.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="10" fill="#898781" text-anchor="middle" font-weight="normal" style="font-variant-numeric: tabular-nums;">0%</text>
+<line x1="382.0" y1="80.0" x2="382.0" y2="454.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="382.0" y="468.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="10" fill="#898781" text-anchor="middle" font-weight="normal" style="font-variant-numeric: tabular-nums;">5%</text>
+<line x1="496.1" y1="80.0" x2="496.1" y2="454.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="496.1" y="468.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="10" fill="#898781" text-anchor="middle" font-weight="normal" style="font-variant-numeric: tabular-nums;">10%</text>
+<line x1="610.1" y1="80.0" x2="610.1" y2="454.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="610.1" y="468.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="10" fill="#898781" text-anchor="middle" font-weight="normal" style="font-variant-numeric: tabular-nums;">15%</text>
+<line x1="724.2" y1="80.0" x2="724.2" y2="454.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="724.2" y="468.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="10" fill="#898781" text-anchor="middle" font-weight="normal" style="font-variant-numeric: tabular-nums;">20%</text>
+<path d="M268.0,90.0 h532.0 q4,0 4,4 v8.0 q0,4 -4,4 h-532.0 z" fill="#2a78d6"/>
+<text x="258.0" y="102.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#52514e" text-anchor="end" font-weight="normal" style="">Agent · Workflow execution</text>
+<text x="811.0" y="102.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#0b0b0b" text-anchor="start" font-weight="600" style="font-variant-numeric: tabular-nums;">23.5%</text>
+<path d="M268.0,114.0 h281.1 q4,0 4,4 v8.0 q0,4 -4,4 h-281.1 z" fill="#2a78d6"/>
+<text x="258.0" y="126.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#52514e" text-anchor="end" font-weight="normal" style="">Code · General impl</text>
+<text x="560.1" y="126.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#0b0b0b" text-anchor="start" font-weight="600" style="font-variant-numeric: tabular-nums;">12.5%</text>
+<path d="M268.0,138.0 h171.6 q4,0 4,4 v8.0 q0,4 -4,4 h-171.6 z" fill="#2a78d6"/>
+<text x="258.0" y="150.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#52514e" text-anchor="end" font-weight="normal" style="">Code · Debugging</text>
+<text x="450.6" y="150.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#0b0b0b" text-anchor="start" font-weight="600" style="font-variant-numeric: tabular-nums;">7.7%</text>
+<path d="M268.0,162.0 h157.9 q4,0 4,4 v8.0 q0,4 -4,4 h-157.9 z" fill="#2a78d6"/>
+<text x="258.0" y="174.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#52514e" text-anchor="end" font-weight="normal" style="">Agent · Multi step planning</text>
+<text x="436.9" y="174.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#0b0b0b" text-anchor="start" font-weight="600" style="font-variant-numeric: tabular-nums;">7.1%</text>
+<path d="M268.0,186.0 h121.4 q4,0 4,4 v8.0 q0,4 -4,4 h-121.4 z" fill="#2a78d6"/>
+<text x="258.0" y="198.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#52514e" text-anchor="end" font-weight="normal" style="">Classification tagging</text>
+<text x="400.4" y="198.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#0b0b0b" text-anchor="start" font-weight="600" style="font-variant-numeric: tabular-nums;">5.5%</text>
+<path d="M268.0,210.0 h116.9 q4,0 4,4 v8.0 q0,4 -4,4 h-116.9 z" fill="#2a78d6"/>
+<text x="258.0" y="222.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#52514e" text-anchor="end" font-weight="normal" style="">Code · File read write</text>
+<text x="395.9" y="222.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#0b0b0b" text-anchor="start" font-weight="600" style="font-variant-numeric: tabular-nums;">5.3%</text>
+<path d="M268.0,234.0 h85.0 q4,0 4,4 v8.0 q0,4 -4,4 h-85.0 z" fill="#2a78d6"/>
+<text x="258.0" y="246.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#52514e" text-anchor="end" font-weight="normal" style="">Data · Extraction</text>
+<text x="364.0" y="246.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#0b0b0b" text-anchor="start" font-weight="600" style="font-variant-numeric: tabular-nums;">3.9%</text>
+<path d="M268.0,258.0 h80.4 q4,0 4,4 v8.0 q0,4 -4,4 h-80.4 z" fill="#2a78d6"/>
+<text x="258.0" y="270.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#52514e" text-anchor="end" font-weight="normal" style="">Roleplay fiction</text>
+<text x="359.4" y="270.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#0b0b0b" text-anchor="start" font-weight="600" style="font-variant-numeric: tabular-nums;">3.7%</text>
+<path d="M268.0,282.0 h73.5 q4,0 4,4 v8.0 q0,4 -4,4 h-73.5 z" fill="#2a78d6"/>
+<text x="258.0" y="294.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#52514e" text-anchor="end" font-weight="normal" style="">Code · Frontend ui</text>
+<text x="352.5" y="294.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#0b0b0b" text-anchor="start" font-weight="600" style="font-variant-numeric: tabular-nums;">3.4%</text>
+<path d="M268.0,306.0 h73.5 q4,0 4,4 v8.0 q0,4 -4,4 h-73.5 z" fill="#2a78d6"/>
+<text x="258.0" y="318.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#52514e" text-anchor="end" font-weight="normal" style="">Code · Shell execution</text>
+<text x="352.5" y="318.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#0b0b0b" text-anchor="start" font-weight="600" style="font-variant-numeric: tabular-nums;">3.4%</text>
+<path d="M268.0,330.0 h71.3 q4,0 4,4 v8.0 q0,4 -4,4 h-71.3 z" fill="#2a78d6"/>
+<text x="258.0" y="342.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#52514e" text-anchor="end" font-weight="normal" style="">Conversational reply</text>
+<text x="350.3" y="342.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#0b0b0b" text-anchor="start" font-weight="600" style="font-variant-numeric: tabular-nums;">3.3%</text>
+<path d="M268.0,354.0 h50.7 q4,0 4,4 v8.0 q0,4 -4,4 h-50.7 z" fill="#2a78d6"/>
+<text x="258.0" y="366.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#52514e" text-anchor="end" font-weight="normal" style="">Code · Review security</text>
+<text x="329.7" y="366.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#0b0b0b" text-anchor="start" font-weight="600" style="font-variant-numeric: tabular-nums;">2.4%</text>
+<path d="M268.0,378.0 h50.7 q4,0 4,4 v8.0 q0,4 -4,4 h-50.7 z" fill="#2a78d6"/>
+<text x="258.0" y="390.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#52514e" text-anchor="end" font-weight="normal" style="">Qa knowledge</text>
+<text x="329.7" y="390.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#0b0b0b" text-anchor="start" font-weight="600" style="font-variant-numeric: tabular-nums;">2.4%</text>
+<path d="M268.0,402.0 h46.2 q4,0 4,4 v8.0 q0,4 -4,4 h-46.2 z" fill="#2a78d6"/>
+<text x="258.0" y="414.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#52514e" text-anchor="end" font-weight="normal" style="">Content writing</text>
+<text x="325.2" y="414.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#0b0b0b" text-anchor="start" font-weight="600" style="font-variant-numeric: tabular-nums;">2.2%</text>
+<path d="M268.0,426.0 h39.3 q4,0 4,4 v8.0 q0,4 -4,4 h-39.3 z" fill="#2a78d6"/>
+<text x="258.0" y="438.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#52514e" text-anchor="end" font-weight="normal" style="">Agent · Memory extraction</text>
+<text x="318.3" y="438.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="11" fill="#0b0b0b" text-anchor="start" font-weight="600" style="font-variant-numeric: tabular-nums;">1.9%</text>
+<text x="24.0" y="482.0" font-family='system-ui, -apple-system, "Segoe UI", sans-serif' font-size="10" fill="#898781" text-anchor="start" font-weight="normal" style="">Source: OpenRouter (openrouter.ai/rankings), as of 2026-08-31. Licensed under CC BY 4.0.</text>
+</svg>

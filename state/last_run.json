@@ -1,9 +1,9 @@
 {
   "cadence": "weekly",
-  "completed_at": "2026-09-01T13:51:54Z",
+  "completed_at": "2026-09-01T14:48:28Z",
   "outcomes": {
-    "first_capture": 3
+    "first_capture": 4
   },
   "shard": "1/1",
-  "sources": 3
+  "sources": 4
 }

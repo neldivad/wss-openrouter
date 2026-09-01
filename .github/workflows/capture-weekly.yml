@@ -51,7 +51,7 @@ jobs:
     env:
       WSS_CONTACT: ${{ secrets.WSS_CONTACT }}
       # One line per authenticated source's bearer_env.
-      WSS_OPENROUTER_KEY: ${{ secrets.WSS_OPENROUTER_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

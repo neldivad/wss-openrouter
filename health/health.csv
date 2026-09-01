@@ -1,4 +1,5 @@
 source_id,first_success_at,last_success_at,last_attempt_at,consecutive_failures,expected_interval_h,staleness_h,gate_fail_rate_28d,status
-openrouter.models.catalog,2026-09-01T13:51:27Z,2026-09-01T13:51:27Z,2026-09-01T13:51:27Z,0,168,0.1,0.000,active
-openrouter.usage.images,2026-09-01T13:51:50Z,2026-09-01T13:51:50Z,2026-09-01T13:51:50Z,0,168,0.1,0.000,active
-openrouter.usage.tools,2026-09-01T13:51:52Z,2026-09-01T13:51:52Z,2026-09-01T13:51:52Z,0,168,0.1,0.000,active
+openrouter.benchmarks.artificial-analysis,2026-09-01T14:47:56Z,2026-09-01T14:47:56Z,2026-09-01T14:47:56Z,0,168,0.0,0.000,active
+openrouter.benchmarks.design-arena,2026-09-01T14:48:19Z,2026-09-01T14:48:19Z,2026-09-01T14:48:19Z,0,168,0.0,0.000,active
+openrouter.classifications.task,2026-09-01T14:48:23Z,2026-09-01T14:48:23Z,2026-09-01T14:48:23Z,0,168,0.0,0.000,active
+openrouter.models.catalog,2026-09-01T14:48:26Z,2026-09-01T14:48:26Z,2026-09-01T14:48:26Z,0,168,0.0,0.000,active

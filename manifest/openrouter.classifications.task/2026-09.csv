@@ -1,0 +1,2 @@
+source_id,url,fetched_at,http_status,content_type,content_length,content_sha256,etag,last_modified,outcome,raw_ref,reason,warnings
+openrouter.classifications.task,https://openrouter.ai/api/v1/classifications/task?window=7d,2026-09-01T14:48:23Z,200,application/json,30888,3e39cf29aaa678ff4545afcab15af950c06e8c438177101e3ca5e86770b3f10d,,,first_capture,raw/openrouter.classifications.task/2026/09/20260901T144823Z-3e39cf29aaa6.json,,

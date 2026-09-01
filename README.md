@@ -1,24 +1,26 @@
-# wss-openrouter — OpenRouter Usage History
+# wss-openrouter — OpenRouter Demand History
 
-Weekly capture of **which models people actually run**, and what inference
-costs. OpenRouter routes real production traffic across hundreds of models
-and publishes weekly token volumes — but only for a **rolling 13-week
-window**. Any week older than about three months falls off and is gone.
+Weekly capture of **what people actually ask AI models to do**, what those
+models cost, and how they score — from OpenRouter's Data API.
 
-![Where inference demand actually goes](examples/charts/usage-share.svg)
+![What people actually ask models to do](examples/charts/task-mix.svg)
 
-That chart is one capture. The endpoint hands back thirteen weeks at once, so
-this repo had real history on its first day — and it already shows a clean
-substitution: `deepseek-v4-flash (Apr 23)` led from June, its `Jul 31`
-successor entered at zero in late July, crossed over in early August, and now
-leads at 11.7% while the older version has fallen to 4.4%.
+Agentic workflow execution alone is **23.5% of all tokens**, and Code plus
+Agent together are 72% of traffic. That composition is published for a
+**trailing 7-day window only** — there is no historical window, so last
+month's mix is unrecoverable. That is precisely why this repo exists.
 
-## Why this is different from download counts
+## What this repo does *not* capture, on purpose
 
-Downloads, stars and likes measure **stated interest** — cheap, reversible,
-and gameable. Token volume measures **revealed use**: somebody paid for that
-inference. It is the closest public proxy for what is actually in production,
-and nobody keeps its history.
+OpenRouter's `rankings-daily` endpoint already serves daily per-model token
+volumes back to **2025-01-01**, in windows up to 366 days. They archive it
+properly, so capturing it would be rebuilding an archive that already exists
+— and `wss validate` would reject such a source (`destroys_own_history:
+false`). **Query it directly when you need it**, and cite their `meta.as_of`.
+
+An earlier version of this repo scraped an undocumented weekly endpoint for
+the same numbers. That was redundant and has been removed. What remains is
+only what genuinely perishes.
 
 ## The data
 
@@ -28,22 +30,15 @@ and nobody keeps its history.
 series_id, entity_id, observed_at, captured_at, metric, value, unit, source_id, raw_ref, parser_version
 ```
 
-| series | metric | meaning |
+| series | entity_id | metrics |
 | --- | --- | --- |
-| `openrouter.usage.tools` | `tokens_weekly` | tokens served per model, per week |
-| `openrouter.usage.images` | `tokens_weekly` | same, for image-capable use |
-| both | `tokens_weekly_total` | the ranked total that week |
-| `openrouter.models.catalog` | `price_prompt_usd_per_mtok` | input price, USD per million tokens |
-| | `price_completion_usd_per_mtok` | output price |
-| | `price_cache_read_usd_per_mtok` | cached-input price |
-| | `context_length` | context window, tokens |
-| | `hugging_face_id` | **join key** to `wss-hugging-face` |
+| `openrouter.classifications.task` | `macro:code`, `task:agent:workflow_execution`, `task:<tag>/model:<id>` | `usage_share`, `token_share`, `category_*_share`, `tag_*_share` |
+| `openrouter.benchmarks.artificial-analysis` | model permaslug | `intelligence_index`, `coding_index`, `agentic_index` |
+| `openrouter.benchmarks.design-arena` | `<model>/arena:<arena>/<category>` | `elo`, `win_rate`, `avg_generation_time` |
+| `openrouter.models.catalog` | model permaslug | `price_prompt_usd_per_mtok`, `price_completion_usd_per_mtok`, `price_cache_read_usd_per_mtok`, `context_length`, `hugging_face_id` |
 
-`observed_at` is the week being described; `captured_at` is when we fetched
-it. They differ by up to three months here, which is the point — and because
-each capture restates thirteen weeks, a **revision** to an already-published
-week would show up as two statements of the same week from different capture
-dates, both preserved.
+Every source stamps `observed_at` from the payload's own date (`as_of`), not
+from fetch time.
 
 ```bash
 head derived/observations/*.csv
@@ -51,47 +46,24 @@ python examples/load_observations.py
 duckdb -c "SELECT * FROM read_csv_auto('derived/observations/*.csv') LIMIT 5"
 ```
 
-## The join worth making
+## What you can build from it
 
-About 180 of 417 catalogued models carry a `hugging_face_id`. That links this
-repo's **token volume** to `wss-hugging-face`'s **download counts** for the
-same model — stated interest against revealed use, on one entity. Divergence
-between the two is the interesting quantity: models everyone downloads but
-nobody serves, and models quietly carrying real traffic.
-
-## Coverage
-
-Machine-readable in [health/health.csv](health/health.csv)
-(`first_success_at` → `last_success_at`).
-
-| series | what it lists | covered since | status |
-| --- | --- | --- | --- |
-| `openrouter.usage.tools` | weekly tokens for the top 10 models | 2026-09-01 (data from 2026-06-08) | ongoing |
-| `openrouter.usage.images` | same, image-capable use | 2026-09-01 (data from 2026-06-08) | ongoing |
-| `openrouter.models.catalog` | prices, context limits, HF ids for every model | 2026-09-01 | ongoing |
-
-## Caveats, stated plainly
-
-- **Only the top 10 models are itemised.** Everything else is bucketed as
-  `Others` — around 39% of tokens. The tail is invisible; the `Others` share
-  is itself a concentration measure.
-- **OpenRouter is not the market.** It is one router with its own user mix,
-  skewed toward developers and toward models with free tiers. It is a proxy
-  for production usage, not a census of it.
-- **The rankings endpoint is undocumented** — it backs the public rankings
-  page and `robots.txt` permits it, but it can change without notice. The
-  gates require `ys` in the payload, so a shape change fails loudly rather
-  than silently producing wrong numbers.
-- Model ids embed dates (`…-20260731`), so a "new version" is a **new
-  entity**, not a revision of the old one. That is what makes version
-  substitution visible.
+- **Demand composition over time** — is agentic workflow execution still
+  growing, and at whose expense? Nobody else will have this history.
+- **Cost-versus-capability as a time series** — benchmark scores joined to
+  catalogue prices, tracked weekly, shows the efficient frontier moving
+  rather than a single snapshot scatter.
+- **Which model leads which task** — the `task:<tag>/model:<id>` rows record
+  the leader per task per week, so displacement is visible per workload
+  rather than only in aggregate.
+- **Stated interest vs revealed use** — ~180 of 417 catalogued models carry
+  `hugging_face_id`, joining this repo to `wss-hugging-face` download counts.
 
 ## Setup: this repo needs an API key
 
-OpenRouter's Data API is gated. **Read this before you fork:** the key it
-wants is *the same key that authorises paid inference on your account*.
-Anyone who obtains it can spend your credits. Treat it as a payment
-credential, not a read token.
+**Read this before you fork:** OpenRouter's Data API is gated by *the same
+key that authorises paid inference on your account*. Anyone who obtains it
+can spend your credits. Treat it as a payment credential, not a read token.
 
 1. Create a **dedicated** key at
    [openrouter.ai/settings/keys](https://openrouter.ai/settings/keys) — not
@@ -100,42 +72,73 @@ credential, not a read token.
 
    ```bash
    cp .env.example .env.local
-   $EDITOR .env.local          # set WSS_CONTACT and WSS_OPENROUTER_KEY
+   $EDITOR .env.local          # set OPENROUTER_API_KEY and WSS_CONTACT
    chmod 600 .env.local
    ```
 
-   `.env.local` lives at the repo root and is **gitignored**. Never
+   `.env.local` sits at the repo root and is **gitignored** — never
    `git add` it. Verify with `git check-ignore -v .env.local`.
-3. For CI, add the same values as **repository secrets** (Settings → Secrets
-   and variables → Actions) — `WSS_CONTACT` and `WSS_OPENROUTER_KEY` — and
-   confirm both appear in `capture-weekly.yml`'s `env:` block.
+3. For CI, add both as **repository secrets** (Settings → Secrets and
+   variables → Actions) and confirm they appear in `capture-weekly.yml`'s
+   `env:` block.
 
-The registry never holds the key, only its variable name:
+Naming convention: `WSS_*` is engine configuration (`WSS_CONTACT`), while a
+third-party credential keeps the publisher's own conventional name
+(`OPENROUTER_API_KEY`) — the key belongs to them, not to this project.
+
+The registry holds only the variable's *name*:
 
 ```yaml
 auth:
-  bearer_env: WSS_OPENROUTER_KEY
+  bearer_env: OPENROUTER_API_KEY
 ```
 
 The engine sends it as a request header. It never reaches `raw/`, the
 manifest, or any log — [an engine test](https://github.com/neldivad/wss-engine/blob/main/tests/test_auth.py)
-asserts no file written during an authenticated capture contains the secret.
-If a key is ever exposed, **rotate it at OpenRouter first**; scrubbing git
-history is secondary and never a guarantee.
+asserts no file written during an authenticated capture contains the secret,
+and `wss validate` refuses a credential placed in a URL query string. If a
+key is ever exposed, **rotate it at OpenRouter first**; scrubbing git history
+is secondary and never a guarantee.
 
 Rate limits are 30 requests/minute and 500/day per account — ample for a
-weekly capture.
+weekly capture of four sources.
 
-## How it runs
+## Coverage
 
-`capture-weekly` (Mondays 22:35 UTC) → `health` → `derive`, powered by the
-[wss](https://github.com/neldivad/wss-engine) engine pinned to one version.
-Weekly matches the data's own granularity. No workflow names a source.
+Machine-readable in [health/health.csv](health/health.csv)
+(`first_success_at` → `last_success_at`).
 
-## Licences
+| series | what it lists | covered since | status |
+| --- | --- | --- | --- |
+| `openrouter.classifications.task` | task mix and per-task model leaders | 2026-09-01 | ongoing |
+| `openrouter.benchmarks.artificial-analysis` | intelligence / coding / agentic indices | 2026-09-01 | ongoing |
+| `openrouter.benchmarks.design-arena` | tournament ELO and win rates | 2026-09-01 | ongoing |
+| `openrouter.models.catalog` | prices, context limits, HF ids | 2026-09-01 | ongoing |
 
-Code MIT ([LICENSE](LICENSE)); data CC-BY-4.0 ([LICENSE-DATA](LICENSE-DATA)).
-Captured content comes from OpenRouter's public endpoints and remains subject
-to [their terms](https://openrouter.ai/terms).
+Retired: `openrouter.usage.tools` and `openrouter.usage.images` (2026-09-01,
+removed same day) — redundant with `rankings-daily`, which is archived.
+
+## Caveats, stated plainly
+
+- **Classifications are sampled**, and published as shares only. There are no
+  absolute volumes here; composition is the question this data answers.
+- **OpenRouter is not the market.** One router, developer-skewed, with its
+  own model mix. A proxy for production usage, not a census of it.
+- **Benchmark scores are third-party.** Artificial Analysis and Design Arena
+  set their own methodologies; OpenRouter redistributes. Cite the originator.
+- Token counts elsewhere in OpenRouter's data come from each provider's own
+  tokenizer and are not strictly comparable across providers.
+
+## Licences and attribution
+
+Code MIT ([LICENSE](LICENSE)). Data CC BY 4.0 ([LICENSE-DATA](LICENSE-DATA)) —
+and OpenRouter's Data API is *itself* CC BY 4.0, requiring this citation when
+you republish figures:
+
+> Source: OpenRouter (openrouter.ai/rankings), as of &lt;meta.as_of&gt;.
+> Licensed under CC BY 4.0.
+
+The `as_of` value is preserved as `observed_at` on every row, so the citation
+can always be reconstructed from the data itself.
 
 Topics: `git-scraping` · `open-data` · `point-in-time-data` · `dataset`

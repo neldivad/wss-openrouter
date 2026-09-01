@@ -1,0 +1,36 @@
+# What people ask models to DO, by share of traffic. The endpoint supports
+# only window=7d — there is no historical window, so last month's task mix is
+# unrecoverable. This is the perishable half of OpenRouter's public data.
+source_id: openrouter.classifications.task
+status: active
+cadence: weekly
+schema_id: or-classifications.v1
+
+publisher: OpenRouter
+publisher_tier: first_party
+destroys_own_history: true
+licence: "CC BY 4.0 — cite: Source: OpenRouter (openrouter.ai/rankings), as of <as_of>."
+personal_data: none
+storage: git
+
+notes: >-
+  Demand composition rather than model popularity: which tasks (code
+  generation, summarisation, roleplay, web search) account for traffic, and
+  which models lead each. Sampled and published as shares only, so absolute
+  volumes are not exposed. The 7-day trailing window is the whole reason to
+  capture this.
+
+auth:
+  bearer_env: OPENROUTER_API_KEY
+
+endpoints:
+  - url: "https://openrouter.ai/api/v1/classifications/task?window=7d"
+    delay_seconds: 2
+
+gates:
+  expect_status: 200
+  min_bytes: 5000
+  content_type_any: [json]
+  must_contain: ["macro_categories", "usage_share"]
+  must_not_contain: ["Access Denied"]
+  max_shrink_pct: 50
