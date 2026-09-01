@@ -37,6 +37,26 @@ mid-tier.
 All four are rendered by [examples/visualize.py](examples/visualize.py) from
 the derived CSVs — stdlib only, deterministic, no network.
 
+## Research questions
+
+The point of this repo is the questions, not the folders. Every source exists
+to answer one; a source that answers none should be dropped, and a question
+nothing answers is the next thing to build. **Append freely** — an open
+question with no data is a useful entry, not a gap to hide.
+
+Status: **open** (nothing captured) · **accruing** (captured, needs weeks) ·
+**answerable** (enough history) · **answered** (finding linked).
+
+| # | Question | Status | Answered by |
+| --- | --- | --- | --- |
+| Q1 | Is the task mix shifting — is agentic work growing at the expense of plain chat, and how fast? | accruing (needs ~8 weeks) | `classifications.task` |
+| Q2 | Which workloads are **contested** and which are locked up? A leader holding 11% of the largest workload is an open door. | answerable now | `classifications.task` |
+| Q3 | Does a model displace another *per workload* before it shows up in aggregate rankings? | accruing | `classifications.task` |
+| Q4 | What does a unit of capability cost over time, and is the efficient frontier moving down? | accruing | `benchmarks.*` + `models.catalog` |
+| Q5 | Do published prices actually fall, and for whom? Which models get quiet price cuts? | accruing | `models.catalog` |
+| Q6 | What does an agent session really cost, and does a cheap-per-token model end up more expensive over 50 turns? | answerable now | `sessions.cost` |
+| Q7 | Divergence between **stated interest and revealed use** — models everyone downloads but nobody serves. | open — needs the join run | `models.catalog.hugging_face_id` + `wss-hugging-face` |
+
 ## What this repo does *not* capture, on purpose
 
 OpenRouter's `rankings-daily` endpoint already serves daily per-model token
