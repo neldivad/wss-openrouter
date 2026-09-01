@@ -1,0 +1,32 @@
+# Weekly token volume per model on OpenRouter — actual production inference,
+# not downloads or stars. The endpoint returns a ROLLING 13-WEEK WINDOW: any
+# week older than ~3 months falls off and is unrecoverable.
+source_id: openrouter.usage.images
+status: active
+cadence: weekly
+schema_id: or-rankings.v1
+
+publisher: OpenRouter
+publisher_tier: first_party
+destroys_own_history: true
+licence: "public endpoint backing https://openrouter.ai/rankings; see https://openrouter.ai/terms"
+personal_data: none
+storage: git
+
+notes: >-
+  Adoption measured as revealed use. Token volume for image-capable use. Only the top 10 models are itemised;
+  the remainder is bucketed as "Others", so the tail is not visible — the
+  Others share is itself a concentration measure. Undocumented frontend
+  endpoint: gates will fail loudly if its shape changes.
+
+endpoints:
+  - url: "https://openrouter.ai/api/frontend/v1/rankings/images"
+    delay_seconds: 2
+
+gates:
+  expect_status: 200
+  min_bytes: 1000
+  content_type_any: [json]
+  must_contain: ["ys"]
+  must_not_contain: ["Access Denied", "rate limit"]
+  max_shrink_pct: 50

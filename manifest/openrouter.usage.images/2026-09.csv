@@ -1,0 +1,2 @@
+source_id,url,fetched_at,http_status,content_type,content_length,content_sha256,etag,last_modified,outcome,raw_ref,reason,warnings
+openrouter.usage.images,https://openrouter.ai/api/frontend/v1/rankings/images,2026-09-01T13:51:50Z,200,application/json,5461,bcbc05e7d032e81ec2539455f96b7d7f4894d4cca03a4d8b25dc7ccf6af46093,,,first_capture,raw/openrouter.usage.images/2026/09/20260901T135150Z-bcbc05e7d032.json,,

@@ -1,0 +1,31 @@
+# The model catalogue with per-token prices and context limits. OpenRouter
+# serves only the current catalogue: yesterday's price list is gone, and
+# models are removed outright when providers retire them.
+source_id: openrouter.models.catalog
+status: active
+cadence: weekly
+schema_id: or-catalog.v1
+
+publisher: OpenRouter
+publisher_tier: redistribution
+destroys_own_history: true
+licence: "public API; see https://openrouter.ai/terms"
+personal_data: none
+storage: git
+
+notes: >-
+  A price index for inference, plus `hugging_face_id` on ~180 of 417 models —
+  the join key to wss-hugging-face, letting downloads (stated interest) be
+  compared against token volume (revealed use) for the same model.
+
+endpoints:
+  - url: "https://openrouter.ai/api/v1/models"
+    delay_seconds: 2
+
+gates:
+  expect_status: 200
+  min_bytes: 200000
+  content_type_any: [json]
+  must_contain: ["pricing"]
+  must_not_contain: ["Access Denied"]
+  max_shrink_pct: 40
