@@ -1,0 +1,43 @@
+# What one agent session actually costs, by app, session length and model.
+# The endpoint serves a rolling 30-day window with no date parameters
+# (meta.window_days = 30), so each month's economics is unrecoverable once
+# it rolls off. Nobody else keeps this.
+source_id: openrouter.sessions.cost
+status: active
+cadence: weekly
+schema_id: or-sessions.v1
+
+publisher: OpenRouter
+publisher_tier: first_party
+destroys_own_history: true
+licence: "CC BY 4.0 — cite: Source: OpenRouter Data API, as of <as_of>."
+personal_data: none
+storage: git
+
+notes: >-
+  The unit economics of coding agents: median USD per session, split by turn
+  range (1, 2-9, 10-49, 50+). Answers "what does running this agent on this
+  model actually cost per session", which list prices alone cannot. Apps
+  verified live 2026-09-02; cline and roo-code return no rows and are
+  omitted.
+
+auth:
+  bearer_env: OPENROUTER_API_KEY
+
+endpoints:
+  - url: "https://openrouter.ai/api/v1/datasets/session-cost?app_slug=claude-code"
+    delay_seconds: 2
+  - url: "https://openrouter.ai/api/v1/datasets/session-cost?app_slug=codex"
+    delay_seconds: 2
+  - url: "https://openrouter.ai/api/v1/datasets/session-cost?app_slug=kilo-code"
+    delay_seconds: 2
+  - url: "https://openrouter.ai/api/v1/datasets/session-cost?app_slug=hermes-agent"
+    delay_seconds: 2
+
+gates:
+  expect_status: 200
+  min_bytes: 500
+  content_type_any: [json]
+  must_contain: ["median_session_cost_usd"]
+  must_not_contain: ["Access Denied"]
+  max_shrink_pct: 60

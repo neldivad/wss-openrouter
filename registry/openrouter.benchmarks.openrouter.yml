@@ -1,0 +1,33 @@
+# Current benchmark scores. No date window exists on this endpoint, so only
+# today's scores are ever available — the history of how a model's score
+# moved is destroyed.
+source_id: openrouter.benchmarks.openrouter
+status: active
+cadence: weekly
+schema_id: or-benchmarks.v1
+
+publisher: OpenRouter
+publisher_tier: redistribution
+destroys_own_history: true
+licence: "CC BY 4.0 via OpenRouter; scores originate with OpenRouter's own evaluations"
+personal_data: none
+storage: git
+
+notes: >-
+  OpenRouter's own GPQA, tau-bench and web-search evaluations, with cost and latency per task. Paired with openrouter.models.catalog prices, this turns a
+  cost-versus-capability scatter into a time series.
+
+auth:
+  bearer_env: OPENROUTER_API_KEY
+
+endpoints:
+  - url: "https://openrouter.ai/api/v1/benchmarks?source=openrouter&max_results=100"
+    delay_seconds: 2
+
+gates:
+  expect_status: 200
+  min_bytes: 1000
+  content_type_any: [json]
+  must_contain: ["model_permaslug"]
+  must_not_contain: ["Access Denied"]
+  max_shrink_pct: 50

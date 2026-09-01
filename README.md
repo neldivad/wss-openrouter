@@ -43,7 +43,9 @@ series_id, entity_id, observed_at, captured_at, metric, value, unit, source_id, 
 | `openrouter.classifications.task` | `macro:code`, `task:agent:workflow_execution`, `task:<tag>/model:<id>` | `usage_share`, `token_share`, `category_*_share`, `tag_*_share` |
 | `openrouter.benchmarks.artificial-analysis` | model permaslug | `intelligence_index`, `coding_index`, `agentic_index` |
 | `openrouter.benchmarks.design-arena` | `<model>/arena:<arena>/<category>` | `elo`, `win_rate`, `avg_generation_time` |
-| `openrouter.models.catalog` | model permaslug | `price_prompt_usd_per_mtok`, `price_completion_usd_per_mtok`, `price_cache_read_usd_per_mtok`, `context_length`, `hugging_face_id` |
+| `openrouter.benchmarks.openrouter` | `<model>/bench:<type>` | `accuracy`, `primary_score`, `avg_cost_per_task`, `avg_latency_per_task` |
+| `openrouter.sessions.cost` | `app:<slug>/turns:<range>/model:<permaslug>` | `median_session_cost` |
+| `openrouter.models.catalog` | model permaslug | `price_prompt_usd_per_mtok`, `price_completion_usd_per_mtok`, `price_cache_read_usd_per_mtok`, `context_length`, `canonical_slug`, `hugging_face_id` |
 
 Every source stamps `observed_at` from the payload's own date (`as_of`), not
 from fetch time.
@@ -133,7 +135,9 @@ Machine-readable in [health/health.csv](health/health.csv)
 | `openrouter.classifications.task` | task mix and per-task model leaders | 2026-09-01 | ongoing |
 | `openrouter.benchmarks.artificial-analysis` | intelligence / coding / agentic indices | 2026-09-01 | ongoing |
 | `openrouter.benchmarks.design-arena` | tournament ELO and win rates | 2026-09-01 | ongoing |
-| `openrouter.models.catalog` | prices, context limits, HF ids | 2026-09-01 | ongoing |
+| `openrouter.benchmarks.openrouter` | OpenRouter's own GPQA / tau-bench / search evals | 2026-09-02 | ongoing |
+| `openrouter.sessions.cost` | median USD per agent session by app, length and model | 2026-09-02 | ongoing |
+| `openrouter.models.catalog` | prices, context limits, join keys | 2026-09-01 | ongoing |
 
 Retired: `openrouter.usage.tools` and `openrouter.usage.images` (2026-09-01,
 removed same day) — redundant with `rankings-daily`, which is archived.

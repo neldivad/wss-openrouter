@@ -32,6 +32,7 @@ BY_SOURCE = {
     ),
     "openrouter": (
         ("primary_score", "primary_score", "score"),
+        ("accuracy", "accuracy", "fraction"),
         ("total_tasks", "total_tasks", "count"),
         ("avg_cost_per_task", "avg_cost_per_task", "USD"),
         ("avg_latency_per_task_ms", "avg_latency_per_task", "ms"),
