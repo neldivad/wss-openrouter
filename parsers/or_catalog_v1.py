@@ -4,8 +4,14 @@ Prices arrive as per-token decimal strings. They are converted to USD per
 million tokens (the unit humans quote) using Decimal, never float, so the
 CSV is exact and a rebuild is byte-identical.
 
-`hugging_face_id` is emitted as its own observation so the join to
-wss-hugging-face lives in the data rather than in someone's notebook.
+Two identifiers are emitted as observations so joins live in the data rather
+than in someone's notebook:
+
+  hugging_face_id  joins to wss-hugging-face
+  canonical_slug   the dated permaslug (`anthropic/claude-opus-5-20260723`)
+                   that the benchmark endpoints key on, while `id` here is
+                   the undated alias. Without it, benchmarks and prices join
+                   only by guessing at a version suffix.
 """
 
 import json
@@ -13,7 +19,7 @@ from decimal import Decimal
 
 from wss import derive
 
-PARSER_VERSION = "1"
+PARSER_VERSION = "2"
 
 PER_MILLION = Decimal(1_000_000)
 
@@ -55,7 +61,14 @@ def parse(body: bytes, ctx: derive.ParseContext):
                 value=int(model["context_length"]),
                 unit="tokens",
             )
-        # The join key to wss-hugging-face, carried as data.
+        # Join keys, carried as data.
+        if model.get("canonical_slug"):
+            yield derive.Observation(
+                entity_id=entity_id,
+                metric="canonical_slug",
+                value=model["canonical_slug"],
+                unit="ref",
+            )
         if model.get("hugging_face_id"):
             yield derive.Observation(
                 entity_id=entity_id,

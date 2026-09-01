@@ -59,6 +59,11 @@ duckdb -c "SELECT * FROM read_csv_auto('derived/observations/*.csv') LIMIT 5"
 - **Stated interest vs revealed use** — ~180 of 417 catalogued models carry
   `hugging_face_id`, joining this repo to `wss-hugging-face` download counts.
 
+Worked examples of all of these are in [examples/queries.sql](examples/queries.sql);
+`python examples/load_observations.py` runs them. Cross-source joins use
+`canonical_slug` (the dated permaslug the benchmark endpoints key on), not
+`id` — that difference is 96 matches versus 14.
+
 ## Setup: this repo needs an API key
 
 **Read this before you fork:** OpenRouter's Data API is gated by *the same
