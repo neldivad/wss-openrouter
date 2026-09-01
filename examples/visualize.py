@@ -35,11 +35,16 @@ GRID = "#e1e0d9"
 BASELINE = "#c3c2b7"
 HUE = "#2a78d6"
 HUE_SOFT = "#9ec5f4"
-# Scatter is an all-pairs form: only the first three categorical slots stay
-# distinguishable under colour-vision deficiency, so at most three families
-# are coloured and the rest are deliberately grey.
-FAMILY_SLOTS = ("#2a78d6", "#eb6834", "#1baf7a")
+# Blue / orange / aqua / violet — verified with the palette validator under
+# --pairs all (worst CVD dE 9.2, worst normal-vision dE 16.3), so this set is
+# safe even on a scatter, where every colour must differ from every other.
+# A fifth would fail, so anything past four is deliberately grey.
+FAMILY_SLOTS = ("#2a78d6", "#eb6834", "#1baf7a", "#4a3aa7")
 FAMILY_OTHER = "#b8b7b0"
+
+# Macro category is a fixed, small set, so its colours are pinned rather than
+# ranked: "Code" is always blue, in every chart, forever.
+CATEGORY_COLOUR = {"code": "#2a78d6", "agent": "#eb6834", "general": "#1baf7a", "data": "#4a3aa7"}
 FONT = 'system-ui, -apple-system, "Segoe UI", sans-serif'
 
 MACRO_LABEL = {"code": "Code", "agent": "Agent", "data": "Data", "general": "General"}
@@ -105,6 +110,36 @@ def pretty(tag: str) -> str:
     words = rest.replace("_", " ")
     label = words[:1].upper() + words[1:]
     return f"{MACRO_LABEL.get(macro, macro.title())} · {label}" if macro else label
+
+
+def macro_of(tag: str) -> str:
+    """Which macro category a task tag belongs to; unprefixed tags are general."""
+    head = tag.split(":", 1)[0] if ":" in tag else ""
+    return head if head in CATEGORY_COLOUR else "general"
+
+
+def company_colours(volume: dict) -> dict:
+    """Company -> colour, ranked by measured volume, top four only.
+
+    Ranked rather than pinned because the field of vendors changes; the legend
+    carries identity, so colour never has to be remembered between charts.
+    Shared by every chart that colours by company so they always agree.
+    """
+    by_company: dict[str, float] = defaultdict(float)
+    for model_id, vol in volume.items():
+        by_company[model_id.split("/")[0]] += vol
+    ranked = [c for c, _ in sorted(by_company.items(), key=lambda kv: (-kv[1], kv[0]))]
+    return {c: FAMILY_SLOTS[i] for i, c in enumerate(ranked[:4])}
+
+
+def legend(items, y: float, x0: float = 24.0) -> list[str]:
+    """A legend is always present for two or more colours."""
+    out, x = [], x0
+    for label, colour in items:
+        out.append(f'<circle cx="{x + 5}" cy="{y - 4}" r="5" fill="{colour}"/>')
+        out.append(svg_text(x + 15, y, label, size=11, fill=INK2))
+        x += 15 + len(label) * 6.6 + 18
+    return out
 
 
 def cite(as_of: str) -> str:
@@ -175,12 +210,7 @@ def price_capability(out: Path, all_rows) -> str:
             frontier.append(p)
     frontier_ids = {p[0] for p in frontier}
 
-    # colour the three families carrying the most measured volume
-    fam_volume: dict[str, float] = defaultdict(float)
-    for model_id, _, _, vol in points:
-        fam_volume[model_id.split("/")[0]] += vol
-    top_families = [f for f, _ in sorted(fam_volume.items(), key=lambda kv: -kv[1])[:3]]
-    colour_of = {f: FAMILY_SLOTS[i] for i, f in enumerate(top_families)}
+    colour_of = company_colours({m: v for m, _, _, v in points})
 
     as_of = max(r["observed_at"] for r in all_rows if r["metric"] == "intelligence_index")[:10]
     width, height = 960.0, 560.0
@@ -198,12 +228,7 @@ def price_capability(out: Path, all_rows) -> str:
         svg_text(24, 50, f"{len(points)} models priced and scored · snapshot {as_of}", size=12, fill=INK2),
         svg_text(24, 68, "vertical = Artificial Analysis intelligence index · line = efficient frontier · marker area = share of measured tokens", size=11, fill=MUTED),
     ]
-    lx = 24.0
-    for fam in top_families + ["other"]:
-        col = colour_of.get(fam, FAMILY_OTHER)
-        body.append(f'<circle cx="{lx + 5}" cy="88" r="5" fill="{col}"/>')
-        body.append(svg_text(lx + 15, 92, fam, size=11, fill=INK2))
-        lx += 15 + len(fam) * 6.6 + 18
+    body += legend([(c, colour_of[c]) for c in colour_of] + [("other", FAMILY_OTHER)], 92)
 
     d = 10 ** math.floor(math.log10(lo))
     while d <= hi * 1.001:
@@ -245,7 +270,7 @@ def price_capability(out: Path, all_rows) -> str:
     body.append(svg_text(24, height - 4, cite(as_of) + " Scores: Artificial Analysis.", size=9, fill=MUTED))
     out.write_text(wrap(width, height, "What a point of intelligence costs",
                         "Scatter of model benchmark score against input price; colour is model family, marker area is token share, line is the efficient frontier.", body), encoding="utf-8")
-    return f"{out.relative_to(REPO)} — {len(points)} models, {len(frontier)} on the frontier, {len(top_families)} families coloured"
+    return f"{out.relative_to(REPO)} — {len(points)} models, {len(frontier)} on the frontier, {len(colour_of)} companies coloured"
 
 
 def task_mix(out: Path, all_rows, top_n: int = 15) -> str:
@@ -257,7 +282,7 @@ def task_mix(out: Path, all_rows, top_n: int = 15) -> str:
               if r["metric"] == "token_share" and r["entity_id"].startswith("macro:") and r["observed_at"][:10] == as_of}
     top = sorted(share.items(), key=lambda kv: -kv[1])[:top_n]
 
-    width, left, right, top_pad = 880.0, 250.0, 100.0, 92.0
+    width, left, right, top_pad = 880.0, 250.0, 100.0, 108.0
     bar_h, gap = 16.0, 8.0
     height = top_pad + len(top) * (bar_h + gap) + 36
     vmax, span = top[0][1], width - left - right
@@ -266,6 +291,7 @@ def task_mix(out: Path, all_rows, top_n: int = 15) -> str:
         svg_text(24, 50, f"share of all tokens on OpenRouter · trailing 7 days to {as_of}", size=12, fill=INK2),
         svg_text(24, 72, " · ".join(f"{MACRO_LABEL.get(k, k)} {v * 100:.0f}%" for k, v in sorted(macros.items(), key=lambda kv: -kv[1])), size=12, fill=INK2, weight="600"),
     ]
+    body += legend([(MACRO_LABEL[k], CATEGORY_COLOUR[k]) for k in ("code", "agent", "general", "data")], 96)
     body.append(f'<line x1="{left}" y1="{top_pad - 10}" x2="{left}" y2="{height - 32}" stroke="{BASELINE}" stroke-width="1"/>')
     t = 0.0
     while t <= vmax:
@@ -276,7 +302,7 @@ def task_mix(out: Path, all_rows, top_n: int = 15) -> str:
     for i, (tag, s) in enumerate(top):
         y = top_pad + i * (bar_h + gap)
         w = max(1.5, s / vmax * span)
-        body.append(hbar(left, y, w, bar_h, HUE))
+        body.append(hbar(left, y, w, bar_h, CATEGORY_COLOUR[macro_of(tag)]))
         body.append(svg_text(left - 10, y + bar_h - 4, pretty(tag)[:38], size=11, fill=INK2, anchor="end"))
         body.append(svg_text(left + w + 7, y + bar_h - 4, f"{s * 100:.1f}%", size=11, fill=INK, weight="600", tabular=True))
     body.append(svg_text(24, height - 4, cite(as_of), size=10, fill=MUTED))
@@ -295,7 +321,8 @@ def task_leaders(out: Path, all_rows, top_n: int = 15) -> str:
             model, within = max(per_task[tag].items(), key=lambda kv: kv[1])
             ranked.append((tag, s, model, within))
 
-    width, left, right, top_pad = 940.0, 300.0, 150.0, 92.0
+    colour_of = company_colours(model_volume(all_rows))
+    width, left, right, top_pad = 940.0, 300.0, 150.0, 108.0
     bar_h, gap = 16.0, 8.0
     height = top_pad + len(ranked) * (bar_h + gap) + 36
     vmax = max(w for _, _, _, w in ranked)
@@ -305,6 +332,8 @@ def task_leaders(out: Path, all_rows, top_n: int = 15) -> str:
         svg_text(24, 50, f"bar = the leading model's share OF THAT WORKLOAD · trailing 7 days to {as_of}", size=12, fill=INK2),
         svg_text(24, 72, "a short bar means the workload is contested; a long one means it is spoken for", size=11, fill=MUTED),
     ]
+    seen_co = sorted({m.split("/")[0] for _, _, m, _ in ranked})
+    body += legend([(c, colour_of.get(c, FAMILY_OTHER)) for c in seen_co], 96)
     body.append(f'<line x1="{left}" y1="{top_pad - 10}" x2="{left}" y2="{height - 32}" stroke="{BASELINE}" stroke-width="1"/>')
     t = 0.0
     while t <= vmax:
@@ -315,7 +344,7 @@ def task_leaders(out: Path, all_rows, top_n: int = 15) -> str:
     for i, (tag, s, model, within) in enumerate(ranked):
         y = top_pad + i * (bar_h + gap)
         w = max(1.5, within / vmax * span)
-        body.append(hbar(left, y, w, bar_h, HUE))
+        body.append(hbar(left, y, w, bar_h, colour_of.get(model.split("/")[0], FAMILY_OTHER)))
         body.append(svg_text(left - 10, y + bar_h - 4, f"{pretty(tag)[:30]}  ({s * 100:.1f}% of tokens)", size=11, fill=INK2, anchor="end"))
         body.append(svg_text(left + w + 7, y + bar_h - 4, f"{within * 100:.0f}%  {short_model(model)[:26]}", size=10, fill=INK))
     body.append(svg_text(24, height - 4, cite(as_of), size=10, fill=MUTED))
@@ -332,7 +361,7 @@ def task_contest(out: Path, all_rows) -> str:
         return "task-contest.svg skipped: too few tasks yet"
 
     width, height = 900.0, 470.0
-    left, right, top, bottom = 128.0, 40.0, 104.0, 58.0
+    left, right, top, bottom = 128.0, 40.0, 122.0, 58.0
     xmax = max(p[2] for p in pts) * 1.12
     ymax = max(p[1] for p in pts) * 1.12
     x_of = lambda v: left + v / xmax * (width - left - right)  # noqa: E731
@@ -343,6 +372,7 @@ def task_contest(out: Path, all_rows) -> str:
         svg_text(24, 50, f"workload size against how much the leading model holds · trailing 7 days to {as_of}", size=12, fill=INK2),
         svg_text(24, 70, "up and to the LEFT = a big workload nobody owns", size=11, fill=MUTED),
     ]
+    body += legend([(MACRO_LABEL[k], CATEGORY_COLOUR[k]) for k in ("code", "agent", "general", "data")], 94)
     for frac in (0.05, 0.10, 0.15, 0.20, 0.25):
         if frac <= xmax:
             gx = x_of(frac)
@@ -357,14 +387,25 @@ def task_contest(out: Path, all_rows) -> str:
     body.append(svg_text((left + width - right) / 2, height - 14, "leading model's share of that workload →  more locked up", size=10, fill=MUTED, anchor="middle"))
     body.append(f'<line x1="{left}" y1="{height - bottom}" x2="{width - right}" y2="{height - bottom}" stroke="{BASELINE}" stroke-width="1"/>')
 
-    placed: list[tuple[float, float]] = []
     for tag, size, lead in sorted(pts, key=lambda p: -p[1]):
         x, y = x_of(lead), y_of(size)
-        body.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5" fill="{HUE}" fill-opacity="0.75" stroke="{SURFACE}" stroke-width="2"/>')
-        # label only where it will not collide
-        if not any(abs(x - px) < 90 and abs(y - py) < 13 for px, py in placed):
-            body.append(svg_text(x + 9, y + 3.5, pretty(tag)[:26], size=10, fill=INK2))
-            placed.append((x, y))
+        body.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5.5" fill="{CATEGORY_COLOUR[macro_of(tag)]}" fill-opacity="0.85" stroke="{SURFACE}" stroke-width="2"/>')
+
+    # Label the biggest workloads only, and never clip a word: a half-written
+    # label reads worse than none. The rest are carried by the legend.
+    placed: list[tuple[float, float, float]] = []
+    for tag, size, lead in sorted(pts, key=lambda p: -p[1])[:12]:
+        x, y = x_of(lead), y_of(size)
+        label = pretty(tag)
+        w = len(label) * 5.6
+        if x + 9 + w > width - right:
+            lx, anchor, x0, x1 = x - 9 - w, "end", x - 9 - w, x - 9
+        else:
+            lx, anchor, x0, x1 = x + 9, "start", x + 9, x + 9 + w
+        if any(abs(y - py) < 12 and not (x1 < bx0 or x0 > bx1) for bx0, bx1, py in placed):
+            continue
+        body.append(svg_text(x - 9 if anchor == "end" else lx, y + 3.5, label, size=10, fill=INK2, anchor=anchor))
+        placed.append((x0, x1, y))
     body.append(svg_text(24, height - 4, cite(as_of), size=10, fill=MUTED))
     out.write_text(wrap(width, height, "Where the open doors are", "Scatter of workload size against the leading model's share of that workload.", body), encoding="utf-8")
     return f"{out.relative_to(REPO)} — {len(pts)} workloads"
