@@ -20,7 +20,7 @@ concurrency:
 env:
   CADENCE: weekly
   SHARDS: "20" # matrix cap is 256 jobs/run — aim for ~20 jobs of ~50 sources
-  ENGINE_SPEC: "wss @ git+https://github.com/${{ github.repository_owner }}/wss-engine.git@v0.4.1"
+  ENGINE_SPEC: "wss @ git+https://github.com/${{ github.repository_owner }}/wss-engine.git@v0.5.0"
 
 jobs:
   plan:
@@ -50,6 +50,8 @@ jobs:
         shard: ${{ fromJSON(needs.plan.outputs.shards) }}
     env:
       WSS_CONTACT: ${{ secrets.WSS_CONTACT }}
+      # One line per authenticated source's bearer_env.
+      WSS_OPENROUTER_KEY: ${{ secrets.WSS_OPENROUTER_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

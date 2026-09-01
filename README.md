@@ -86,6 +86,46 @@ Machine-readable in [health/health.csv](health/health.csv)
   entity**, not a revision of the old one. That is what makes version
   substitution visible.
 
+## Setup: this repo needs an API key
+
+OpenRouter's Data API is gated. **Read this before you fork:** the key it
+wants is *the same key that authorises paid inference on your account*.
+Anyone who obtains it can spend your credits. Treat it as a payment
+credential, not a read token.
+
+1. Create a **dedicated** key at
+   [openrouter.ai/settings/keys](https://openrouter.ai/settings/keys) — not
+   your personal one — and set a spend limit on it if you can.
+2. Copy the template and fill it in:
+
+   ```bash
+   cp .env.example .env.local
+   $EDITOR .env.local          # set WSS_CONTACT and WSS_OPENROUTER_KEY
+   chmod 600 .env.local
+   ```
+
+   `.env.local` lives at the repo root and is **gitignored**. Never
+   `git add` it. Verify with `git check-ignore -v .env.local`.
+3. For CI, add the same values as **repository secrets** (Settings → Secrets
+   and variables → Actions) — `WSS_CONTACT` and `WSS_OPENROUTER_KEY` — and
+   confirm both appear in `capture-weekly.yml`'s `env:` block.
+
+The registry never holds the key, only its variable name:
+
+```yaml
+auth:
+  bearer_env: WSS_OPENROUTER_KEY
+```
+
+The engine sends it as a request header. It never reaches `raw/`, the
+manifest, or any log — [an engine test](https://github.com/neldivad/wss-engine/blob/main/tests/test_auth.py)
+asserts no file written during an authenticated capture contains the secret.
+If a key is ever exposed, **rotate it at OpenRouter first**; scrubbing git
+history is secondary and never a guarantee.
+
+Rate limits are 30 requests/minute and 500/day per account — ample for a
+weekly capture.
+
 ## How it runs
 
 `capture-weekly` (Mondays 22:35 UTC) → `health` → `derive`, powered by the
