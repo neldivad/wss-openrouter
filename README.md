@@ -10,6 +10,14 @@ Agent together are 72% of traffic. That composition is published for a
 **trailing 7-day window only** — there is no historical window, so last
 month's mix is unrecoverable. That is precisely why this repo exists.
 
+![What a point of intelligence costs](examples/charts/price-capability.svg)
+
+Joining benchmark scores to catalogue prices gives the **efficient frontier**
+— the models where nothing is both cheaper and smarter. Right now that runs
+from `ling-3.0-flash` (index 37.8 at $0.02/Mtok) to `claude-opus-5:batch`
+(63.1 at $2.50). The inverse is just as useful: several models sit well below
+the frontier, priced like flagships while scoring mid-tier.
+
 ## What this repo does *not* capture, on purpose
 
 OpenRouter's `rankings-daily` endpoint already serves daily per-model token
