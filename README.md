@@ -3,20 +3,39 @@
 Weekly capture of **what people actually ask AI models to do**, what those
 models cost, and how they score — from OpenRouter's Data API.
 
-![What people actually ask models to do](examples/charts/task-mix.svg)
+![Where the open doors are](examples/charts/task-contest.svg)
 
-Agentic workflow execution alone is **23.5% of all tokens**, and Code plus
-Agent together are 72% of traffic. That composition is published for a
-**trailing 7-day window only** — there is no historical window, so last
-month's mix is unrecoverable. That is precisely why this repo exists.
+**The biggest workload on the platform is the one nobody owns.** Agentic
+workflow execution is 23.5% of all tokens, and its leading model holds just
+11% of it. Compare Code · General implementation: half the size, and its
+leader holds twice the share. Colour makes the pattern plain — Code workloads
+(blue) sit right, consolidated; Agent workloads (orange) sit left, contested.
+
+None of this is published as history. The task mix comes from a **trailing
+7-day window** with no date parameters, so last month's version is already
+unrecoverable. That is the whole reason this repo exists.
 
 ![What a point of intelligence costs](examples/charts/price-capability.svg)
 
 Joining benchmark scores to catalogue prices gives the **efficient frontier**
-— the models where nothing is both cheaper and smarter. Right now that runs
-from `ling-3.0-flash` (index 37.8 at $0.02/Mtok) to `claude-opus-5:batch`
-(63.1 at $2.50). The inverse is just as useful: several models sit well below
-the frontier, priced like flagships while scoring mid-tier.
+— the models where nothing is both cheaper *and* smarter, from
+`ling-3.0-flash` (index 37.8 at $0.02/Mtok) to `claude-opus-5:batch` (63.1 at
+$2.50). Marker area is each model's share of measured tokens, so you can see
+which of the good-value models people actually run. The inverse reads just as
+well: everything far below the line is priced like a flagship and scoring
+mid-tier.
+
+<details>
+<summary>Two more views: what the tokens are spent on, and who leads each workload</summary>
+
+![What people actually ask models to do](examples/charts/task-mix.svg)
+
+![Who leads each workload](examples/charts/task-leaders.svg)
+
+</details>
+
+All four are rendered by [examples/visualize.py](examples/visualize.py) from
+the derived CSVs — stdlib only, deterministic, no network.
 
 ## What this repo does *not* capture, on purpose
 
