@@ -82,6 +82,13 @@ can spend your credits. Treat it as a payment credential, not a read token.
    variables → Actions) and confirm they appear in `capture-weekly.yml`'s
    `env:` block.
 
+`WSS_CONTACT` is not a secret — it is who is running the capture, shown in
+the User-Agent so a publisher can reach you rather than silently blocking
+you (SEC EDGAR and others outright require it). **A repository URL is the
+best value**: it identifies you, leads to an issue tracker, and contains no
+personal data. Forks set their own — the value lives only in the gitignored
+file and in CI secrets, so it never travels with the code.
+
 Naming convention: `WSS_*` is engine configuration (`WSS_CONTACT`), while a
 third-party credential keeps the publisher's own conventional name
 (`OPENROUTER_API_KEY`) — the key belongs to them, not to this project.
