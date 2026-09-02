@@ -69,7 +69,19 @@ An earlier version of this repo scraped an undocumented weekly endpoint for
 the same numbers. That was redundant and has been removed. What remains is
 only what genuinely perishes.
 
-## The data
+## The data — no credentials needed to read it
+
+**Using this data requires nothing.** No key, no account, no clone. The API
+key further down is only for running your *own* capture; consuming what is
+already published is a plain HTTP GET of a CC-BY-4.0 CSV:
+
+```bash
+B=https://raw.githubusercontent.com/neldivad/wss-openrouter/main/derived/observations
+curl -sO "$B/2026-09.csv"
+
+# or query it in place
+duckdb -c "SELECT * FROM read_csv_auto('$B/2026-09.csv') LIMIT 5"
+```
 
 `derived/observations/<YYYY-MM>.csv`, long format:
 
@@ -88,6 +100,22 @@ series_id, entity_id, observed_at, captured_at, metric, value, unit, source_id, 
 
 Every source stamps `observed_at` from the payload's own date (`as_of`), not
 from fetch time.
+
+**One gotcha when you query it.** Several sources restate the same
+`observed_at` on every capture — the task mix describes a trailing 7-day
+window, so three captures produce three rows for the same week with different
+`captured_at`. That is deliberate: it is how a *revision* would become
+visible. But it means a naive `WHERE metric = 'token_share'` returns
+duplicates. Take the latest statement of each fact:
+
+```sql
+SELECT * FROM (
+  SELECT *, ROW_NUMBER() OVER (
+    PARTITION BY series_id, entity_id, metric, observed_at
+    ORDER BY captured_at DESC) AS rn
+  FROM observations
+) WHERE rn = 1;
+```
 
 ```bash
 head derived/observations/*.csv
@@ -113,10 +141,13 @@ Worked examples of all of these are in [examples/queries.sql](examples/queries.s
 `canonical_slug` (the dated permaslug the benchmark endpoints key on), not
 `id` — that difference is 96 matches versus 14.
 
-## Setup: this repo needs an API key
+## Setup — only if you are running your own capture
 
-**Read this before you fork:** OpenRouter's Data API is gated by *the same
-key that authorises paid inference on your account*. Anyone who obtains it
+Skip this entirely if you just want the data; see above. This section is for
+forking the repo and capturing for yourself.
+
+OpenRouter's Data API is gated by *the same key that authorises paid inference
+on your account*. Anyone who obtains it
 can spend your credits. Treat it as a payment credential, not a read token.
 
 1. Create a **dedicated** key at
