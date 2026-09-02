@@ -1,32 +1,50 @@
-# wss-openrouter — OpenRouter Demand History
+# wss-openrouter
 
-Weekly capture of **what people actually ask AI models to do**, what those
-models cost, and how they score — from OpenRouter's Data API.
+**What people actually ask AI models to do**, captured weekly — because
+OpenRouter publishes only a trailing 7-day window.
+
+The task mix, session economics and benchmark scores here all come from
+endpoints with no date parameters: they describe *now*, and last month's
+version is already unrecoverable. Model rankings are the exception, and this
+repo deliberately does not capture them — see Contributing.
 
 ![Where the open doors are](examples/charts/task-contest.svg)
 
 **The biggest workload on the platform is the one nobody owns.** Agentic
-workflow execution is 23.5% of all tokens, and its leading model holds just
-11% of it. Compare Code · General implementation: half the size, and its
-leader holds twice the share. Colour makes the pattern plain — Code workloads
-(blue) sit right, consolidated; Agent workloads (orange) sit left, contested.
+workflow execution is 23.5% of all tokens and its leading model holds just 11%
+of it. Code workloads (blue) sit right, consolidated; Agent workloads (orange)
+sit left, contested.
 
-None of this is published as history. The task mix comes from a **trailing
-7-day window** with no date parameters, so last month's version is already
-unrecoverable. That is the whole reason this repo exists.
+## Questions this exists to answer
+
+A source that answers no question gets dropped. A question nothing answers is
+the next thing to build. Append freely.
+
+| # | Question | Status |
+| --- | --- | --- |
+| Q1 | Is the task mix shifting — is agentic work growing, and at whose expense? | needs ~8 weeks |
+| Q2 | Which workloads are contested and which are locked up? | answered — chart above |
+| Q3 | Does a model displace another per workload before it shows in aggregate rankings? | accruing |
+| Q4 | Is the cost of a unit of capability falling over time? | accruing |
+| Q5 | Which models get quiet price cuts? | accruing |
+| Q6 | What does an agent session really cost, over 1 turn versus 50? | answerable |
+| Q7 | Stated interest versus revealed use — models everyone downloads but nobody serves. | open — needs the join run |
+
+## What you can build
+
+Charts come from [examples/visualize.py](examples/visualize.py) — stdlib only,
+deterministic, no network.
 
 ![What a point of intelligence costs](examples/charts/price-capability.svg)
 
-Joining benchmark scores to catalogue prices gives the **efficient frontier**
-— the models where nothing is both cheaper *and* smarter, from
-`ling-3.0-flash` (index 37.8 at $0.02/Mtok) to `claude-opus-5:batch` (63.1 at
-$2.50). Marker area is each model's share of measured tokens, so you can see
-which of the good-value models people actually run. The inverse reads just as
-well: everything far below the line is priced like a flagship and scoring
-mid-tier.
+**Q4 — the efficient frontier**, where nothing is both cheaper *and* smarter:
+`ling-3.0-flash` (index 37.8 at $0.02/Mtok) up to `claude-opus-5:batch` (63.1
+at $2.50). Marker area is share of measured tokens, so you can see which
+good-value models people actually run. Everything far below the line is priced
+like a flagship and scoring mid-tier.
 
 <details>
-<summary>Two more views: what the tokens are spent on, and who leads each workload</summary>
+<summary>Two more views: token composition, and who leads each workload</summary>
 
 ![What people actually ask models to do](examples/charts/task-mix.svg)
 
@@ -34,205 +52,93 @@ mid-tier.
 
 </details>
 
-All four are rendered by [examples/visualize.py](examples/visualize.py) from
-the derived CSVs — stdlib only, deterministic, no network.
+Cross-source joins use `canonical_slug` — the dated permaslug the benchmark
+endpoints key on, not the catalogue's undated `id`. That difference is 96
+matches versus 14.
 
-## Research questions
+## Using it
 
-The point of this repo is the questions, not the folders. Every source exists
-to answer one; a source that answers none should be dropped, and a question
-nothing answers is the next thing to build. **Append freely** — an open
-question with no data is a useful entry, not a gap to hide.
-
-Status: **open** (nothing captured) · **accruing** (captured, needs weeks) ·
-**answerable** (enough history) · **answered** (finding linked).
-
-| # | Question | Status | Answered by |
-| --- | --- | --- | --- |
-| Q1 | Is the task mix shifting — is agentic work growing at the expense of plain chat, and how fast? | accruing (needs ~8 weeks) | `classifications.task` |
-| Q2 | Which workloads are **contested** and which are locked up? A leader holding 11% of the largest workload is an open door. | answerable now | `classifications.task` |
-| Q3 | Does a model displace another *per workload* before it shows up in aggregate rankings? | accruing | `classifications.task` |
-| Q4 | What does a unit of capability cost over time, and is the efficient frontier moving down? | accruing | `benchmarks.*` + `models.catalog` |
-| Q5 | Do published prices actually fall, and for whom? Which models get quiet price cuts? | accruing | `models.catalog` |
-| Q6 | What does an agent session really cost, and does a cheap-per-token model end up more expensive over 50 turns? | answerable now | `sessions.cost` |
-| Q7 | Divergence between **stated interest and revealed use** — models everyone downloads but nobody serves. | open — needs the join run | `models.catalog.hugging_face_id` + `wss-hugging-face` |
-
-## What this repo does *not* capture, on purpose
-
-OpenRouter's `rankings-daily` endpoint already serves daily per-model token
-volumes back to **2025-01-01**, in windows up to 366 days. They archive it
-properly, so capturing it would be rebuilding an archive that already exists
-— and `wss validate` would reject such a source (`destroys_own_history:
-false`). **Query it directly when you need it**, and cite their `meta.as_of`.
-
-An earlier version of this repo scraped an undocumented weekly endpoint for
-the same numbers. That was redundant and has been removed. What remains is
-only what genuinely perishes.
-
-## The data — no credentials needed to read it
-
-**Using this data requires nothing.** No key, no account, no clone. The API
-key further down is only for running your *own* capture; consuming what is
-already published is a plain HTTP GET of a CC-BY-4.0 CSV:
+**Reading this data needs nothing** — no key, no account, no clone. The API
+key below is only for running your own capture:
 
 ```bash
 B=https://raw.githubusercontent.com/neldivad/wss-openrouter/main/derived/observations
-curl -sO "$B/2026-09.csv"
-
-# or query it in place
 duckdb -c "SELECT * FROM read_csv_auto('$B/2026-09.csv') LIMIT 5"
 ```
 
-`derived/observations/<YYYY-MM>.csv`, long format:
-
+```bash
+head derived/observations/*.csv          # one row per entity/metric/day
+python examples/load_observations.py     # sqlite + example queries
+python examples/visualize.py             # regenerate every chart
 ```
-series_id, entity_id, observed_at, captured_at, metric, value, unit, source_id, raw_ref, parser_version
-```
 
-| series | entity_id | metrics |
-| --- | --- | --- |
-| `openrouter.classifications.task` | `macro:code`, `task:agent:workflow_execution`, `task:<tag>/model:<id>` | `usage_share`, `token_share`, `category_*_share`, `tag_*_share` |
-| `openrouter.benchmarks.artificial-analysis` | model permaslug | `intelligence_index`, `coding_index`, `agentic_index` |
-| `openrouter.benchmarks.design-arena` | `<model>/arena:<arena>/<category>` | `elo`, `win_rate`, `avg_generation_time` |
-| `openrouter.benchmarks.openrouter` | `<model>/bench:<type>` | `accuracy`, `primary_score`, `avg_cost_per_task`, `avg_latency_per_task` |
-| `openrouter.sessions.cost` | `app:<slug>/turns:<range>/model:<permaslug>` | `median_session_cost` |
-| `openrouter.models.catalog` | model permaslug | `price_prompt_usd_per_mtok`, `price_completion_usd_per_mtok`, `price_cache_read_usd_per_mtok`, `context_length`, `canonical_slug`, `hugging_face_id` |
+Columns are `series_id, entity_id, observed_at, captured_at, metric, value,
+unit, source_id, raw_ref, parser_version`. `entity_id` is namespaced so
+sources join on it: `task:agent:workflow_execution`,
+`task:<tag>/model:<id>`, `app:claude-code/turns:50-plus-turns/model:<slug>`,
+or a bare model permaslug.
 
-Every source stamps `observed_at` from the payload's own date (`as_of`), not
-from fetch time.
+**One gotcha.** Several sources restate the same `observed_at` on every
+capture — the task mix describes a trailing week, so three captures produce
+three rows for it. That is deliberate: it is how a *revision* becomes visible.
+But it means naive filters double-count, so deduplicate on
+`(series_id, entity_id, metric, observed_at)` taking the latest `captured_at`.
+Every query in [examples/queries.sql](examples/queries.sql) shows the pattern.
 
-**One gotcha when you query it.** Several sources restate the same
-`observed_at` on every capture — the task mix describes a trailing 7-day
-window, so three captures produce three rows for the same week with different
-`captured_at`. That is deliberate: it is how a *revision* would become
-visible. But it means a naive `WHERE metric = 'token_share'` returns
-duplicates. Take the latest statement of each fact:
+Six weekly sources — task classifications, three benchmark sets, session costs
+and the model catalogue — captured Mondays 22:35 UTC by the
+[wss](https://github.com/neldivad/wss-engine) engine. Coverage dates live in
+[health/health.csv](health/health.csv).
 
-```sql
-SELECT * FROM (
-  SELECT *, ROW_NUMBER() OVER (
-    PARTITION BY series_id, entity_id, metric, observed_at
-    ORDER BY captured_at DESC) AS rn
-  FROM observations
-) WHERE rn = 1;
-```
+## Contributing
+
+**The test for a new source: which open question does it close?** If the
+answer is "none", it does not go in.
+
+That rule is why `rankings-daily` is absent. OpenRouter archives per-model
+token volumes back to 2025-01-01 in windows up to 366 days, so capturing them
+would rebuild an archive that already exists — and `wss validate` rejects such
+a source outright (`destroys_own_history: false`). Query it directly when you
+need it, citing their `meta.as_of`. An earlier version of this repo scraped an
+undocumented endpoint for the same numbers; it has been removed.
+
+### Running your own capture
+
+OpenRouter's Data API is gated by **the same key that authorises paid
+inference on your account** — treat it as a payment credential, not a read
+token. Create a dedicated key at
+[openrouter.ai/settings/keys](https://openrouter.ai/settings/keys), set a
+spend limit, then:
 
 ```bash
-head derived/observations/*.csv
-python examples/load_observations.py
-duckdb -c "SELECT * FROM read_csv_auto('derived/observations/*.csv') LIMIT 5"
+cp .env.example .env.local
+$EDITOR .env.local     # OPENROUTER_API_KEY and WSS_CONTACT
+chmod 600 .env.local   # gitignored; verify with: git check-ignore -v .env.local
 ```
 
-## What you can build from it
+For CI, add both as repository secrets. The registry holds only the variable's
+*name* (`auth: {bearer_env: OPENROUTER_API_KEY}`); the engine sends it as a
+header, and it never reaches `raw/`, the manifest or any log. Rate limits are
+30/minute and 500/day — ample for six weekly sources.
 
-- **Demand composition over time** — is agentic workflow execution still
-  growing, and at whose expense? Nobody else will have this history.
-- **Cost-versus-capability as a time series** — benchmark scores joined to
-  catalogue prices, tracked weekly, shows the efficient frontier moving
-  rather than a single snapshot scatter.
-- **Which model leads which task** — the `task:<tag>/model:<id>` rows record
-  the leader per task per week, so displacement is visible per workload
-  rather than only in aggregate.
-- **Stated interest vs revealed use** — ~180 of 417 catalogued models carry
-  `hugging_face_id`, joining this repo to `wss-hugging-face` download counts.
+## Caveats
 
-Worked examples of all of these are in [examples/queries.sql](examples/queries.sql);
-`python examples/load_observations.py` runs them. Cross-source joins use
-`canonical_slug` (the dated permaslug the benchmark endpoints key on), not
-`id` — that difference is 96 matches versus 14.
-
-## Setup — only if you are running your own capture
-
-Skip this entirely if you just want the data; see above. This section is for
-forking the repo and capturing for yourself.
-
-OpenRouter's Data API is gated by *the same key that authorises paid inference
-on your account*. Anyone who obtains it
-can spend your credits. Treat it as a payment credential, not a read token.
-
-1. Create a **dedicated** key at
-   [openrouter.ai/settings/keys](https://openrouter.ai/settings/keys) — not
-   your personal one — and set a spend limit on it if you can.
-2. Copy the template and fill it in:
-
-   ```bash
-   cp .env.example .env.local
-   $EDITOR .env.local          # set OPENROUTER_API_KEY and WSS_CONTACT
-   chmod 600 .env.local
-   ```
-
-   `.env.local` sits at the repo root and is **gitignored** — never
-   `git add` it. Verify with `git check-ignore -v .env.local`.
-3. For CI, add both as **repository secrets** (Settings → Secrets and
-   variables → Actions) and confirm they appear in `capture-weekly.yml`'s
-   `env:` block.
-
-`WSS_CONTACT` is not a secret — it is who is running the capture, shown in
-the User-Agent so a publisher can reach you rather than silently blocking
-you (SEC EDGAR and others outright require it). **A repository URL is the
-best value**: it identifies you, leads to an issue tracker, and contains no
-personal data. Forks set their own — the value lives only in the gitignored
-file and in CI secrets, so it never travels with the code.
-
-Naming convention: `WSS_*` is engine configuration (`WSS_CONTACT`), while a
-third-party credential keeps the publisher's own conventional name
-(`OPENROUTER_API_KEY`) — the key belongs to them, not to this project.
-
-The registry holds only the variable's *name*:
-
-```yaml
-auth:
-  bearer_env: OPENROUTER_API_KEY
-```
-
-The engine sends it as a request header. It never reaches `raw/`, the
-manifest, or any log — [an engine test](https://github.com/neldivad/wss-engine/blob/main/tests/test_auth.py)
-asserts no file written during an authenticated capture contains the secret,
-and `wss validate` refuses a credential placed in a URL query string. If a
-key is ever exposed, **rotate it at OpenRouter first**; scrubbing git history
-is secondary and never a guarantee.
-
-Rate limits are 30 requests/minute and 500/day per account — ample for a
-weekly capture of four sources.
-
-## Coverage
-
-Machine-readable in [health/health.csv](health/health.csv)
-(`first_success_at` → `last_success_at`).
-
-| series | what it lists | covered since | status |
-| --- | --- | --- | --- |
-| `openrouter.classifications.task` | task mix and per-task model leaders | 2026-09-01 | ongoing |
-| `openrouter.benchmarks.artificial-analysis` | intelligence / coding / agentic indices | 2026-09-01 | ongoing |
-| `openrouter.benchmarks.design-arena` | tournament ELO and win rates | 2026-09-01 | ongoing |
-| `openrouter.benchmarks.openrouter` | OpenRouter's own GPQA / tau-bench / search evals | 2026-09-02 | ongoing |
-| `openrouter.sessions.cost` | median USD per agent session by app, length and model | 2026-09-02 | ongoing |
-| `openrouter.models.catalog` | prices, context limits, join keys | 2026-09-01 | ongoing |
-
-Retired: `openrouter.usage.tools` and `openrouter.usage.images` (2026-09-01,
-removed same day) — redundant with `rankings-daily`, which is archived.
-
-## Caveats, stated plainly
-
-- **Classifications are sampled**, and published as shares only. There are no
-  absolute volumes here; composition is the question this data answers.
-- **OpenRouter is not the market.** One router, developer-skewed, with its
-  own model mix. A proxy for production usage, not a census of it.
+- **Classifications are sampled** and published as shares only. No absolute
+  volumes; composition is the question this answers.
+- **OpenRouter is not the market** — one router, developer-skewed, with its
+  own model mix. A proxy for production usage, not a census.
 - **Benchmark scores are third-party.** Artificial Analysis and Design Arena
-  set their own methodologies; OpenRouter redistributes. Cite the originator.
-- Token counts elsewhere in OpenRouter's data come from each provider's own
-  tokenizer and are not strictly comparable across providers.
+  set their own methodologies; cite the originator.
 
-## Licences and attribution
+## Licences
 
-Code MIT ([LICENSE](LICENSE)). Data CC BY 4.0 ([LICENSE-DATA](LICENSE-DATA)) —
-and OpenRouter's Data API is *itself* CC BY 4.0, requiring this citation when
-you republish figures:
+Code MIT; data CC-BY-4.0. OpenRouter's Data API is itself CC BY 4.0 and
+requires this citation when republishing figures:
 
 > Source: OpenRouter (openrouter.ai/rankings), as of &lt;meta.as_of&gt;.
 > Licensed under CC BY 4.0.
 
 The `as_of` value is preserved as `observed_at` on every row, so the citation
-can always be reconstructed from the data itself.
+reconstructs from the data itself.
 
 Topics: `git-scraping` · `open-data` · `point-in-time-data` · `dataset`
