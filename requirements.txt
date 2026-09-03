@@ -1,4 +1,4 @@
 # This repo pins one engine version; the workflows install the same pin
 # (resolving the owner as ${{ github.repository_owner }}). For local
 # development against a sibling checkout: pip install -e ../wss
-wss @ git+https://github.com/neldivad/wss-engine.git@v0.5.3
+wss @ git+https://github.com/neldivad/wss-engine.git@v0.5.4
