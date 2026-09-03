@@ -40,4 +40,12 @@ gates:
   content_type_any: [json]
   must_contain: ["median_session_cost_usd"]
   must_not_contain: ["Access Denied"]
-  max_shrink_pct: 60
+  # 50%: derived from observed volatility, not taste. Across the fleet's
+  # manifest history no source has ever shrunk more than 2.3% between
+  # captures, so 50 is ~20x the worst real movement while still catching
+  # truncation. Set high on purpose: the baseline is the LAST SUCCESSFUL
+  # capture, so a gate that fires on a legitimate change keeps firing
+  # forever against a size the publisher has moved on from, and every
+  # capture in between is lost. Capture must not fail; health flags an
+  # odd source AFTER the bytes are safely stored.
+  max_shrink_pct: 50
