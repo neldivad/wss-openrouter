@@ -1,7 +1,7 @@
 source_id,first_success_at,last_success_at,last_attempt_at,consecutive_failures,expected_interval_h,staleness_h,gate_fail_rate_28d,status
-openrouter.benchmarks.artificial-analysis,2026-09-01T14:47:56Z,2026-09-01T17:42:06Z,2026-09-01T17:42:06Z,0,168,31.7,0.000,active
-openrouter.benchmarks.design-arena,2026-09-01T14:48:19Z,2026-09-01T17:42:03Z,2026-09-01T17:42:03Z,0,168,31.7,0.000,active
-openrouter.benchmarks.openrouter,2026-09-01T17:26:03Z,2026-09-01T17:42:07Z,2026-09-01T17:42:07Z,0,168,31.7,0.000,active
-openrouter.classifications.task,2026-09-01T14:48:23Z,2026-09-01T17:42:05Z,2026-09-01T17:42:05Z,0,168,31.7,0.000,active
-openrouter.models.catalog,2026-09-01T14:48:26Z,2026-09-01T17:42:08Z,2026-09-01T17:42:08Z,0,168,31.7,0.000,active
-openrouter.sessions.cost,2026-09-01T17:26:13Z,2026-09-01T17:42:14Z,2026-09-01T17:42:14Z,0,168,31.7,0.000,active
+openrouter.benchmarks.artificial-analysis,2026-09-01T14:47:56Z,2026-09-01T17:42:06Z,2026-09-01T17:42:06Z,0,168,55.6,0.000,active
+openrouter.benchmarks.design-arena,2026-09-01T14:48:19Z,2026-09-01T17:42:03Z,2026-09-01T17:42:03Z,0,168,55.6,0.000,active
+openrouter.benchmarks.openrouter,2026-09-01T17:26:03Z,2026-09-01T17:42:07Z,2026-09-01T17:42:07Z,0,168,55.6,0.000,active
+openrouter.classifications.task,2026-09-01T14:48:23Z,2026-09-01T17:42:05Z,2026-09-01T17:42:05Z,0,168,55.6,0.000,active
+openrouter.models.catalog,2026-09-01T14:48:26Z,2026-09-01T17:42:08Z,2026-09-01T17:42:08Z,0,168,55.6,0.000,active
+openrouter.sessions.cost,2026-09-01T17:26:13Z,2026-09-01T17:42:14Z,2026-09-01T17:42:14Z,0,168,55.6,0.000,active
